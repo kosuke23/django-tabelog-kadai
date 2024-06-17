@@ -144,10 +144,5 @@ STRIPE_PUBLISHABLE_KEY = 'pk_test_51PRQNWEeOXAXQMHKURfqP1XxEJeEpPcKjqvLKEho8CCsu
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # 例: Gmail を使用する場合
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'inokuchi.kosuke@gmail.com'  # あなたのメールアドレス
-EMAIL_HOST_PASSWORD = '3215goal'  # あなたのメールアカウントのパスワード
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
