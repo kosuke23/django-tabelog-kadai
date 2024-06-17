@@ -1,0 +1,54 @@
+{% load static %}
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAGOYAMESHI</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'tabelog/style.css' %}">
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <header class="bg-dark text-white text-center p-3">
+      <a class="nav-link text-white" href="{% url 'tabelog:index' %}"><h1>NAGOYAMESHI</h1></a>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container">
+              <ul class="nav justify-content-end ml-auto">
+                  <li class="nav-item"><a class="nav-link text-white" href="{% url 'tabelog:index' %}">ホーム</a></li>
+                  
+                  {% if not user.is_authenticated %}
+                  <li class="nav-item"><a class="nav-link text-white" href="{% url 'tabelog:signup' %}">新規会員登録</a></li>
+                  {% else %}
+                  <li class="nav-item"><a class="nav-link text-white" href="{% url 'tabelog:mypage' user.pk %}">マイページ</a></li>
+                  {% endif %}
+
+                  {% if not user.is_authenticated %}
+                  <li class="nav-item"><a class="nav-link text-white" href="{% url 'tabelog:login' %}">ログイン</a></li>
+                  {% else %}
+                  <li class="nav-item"><a class="nav-link text-white" href="{% url 'tabelog:logout' %}">ログアウト</a></li>
+
+                {% endif %}
+              </ul>
+          </div>
+      </nav>
+  </header>
+
+    <!-- コンテンツ -->
+    <main class="flex-grow-1">
+    {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-dark text-white text-center p-3 mt-4">
+        <p>NAGOYAMESHI</p>
+        <!--
+        <div>
+            <a href="company.html" class="link-secondary me-3">会社概要</a>
+        </div>
+        -->
+        <p>© NAGOYAMESHI All rights reserved.</p>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

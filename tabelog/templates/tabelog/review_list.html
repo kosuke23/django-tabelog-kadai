@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container mt-4">
+        <!-- パンくずリスト -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:index' %}">ホーム</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:storelist' %}">店舗一覧</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:store_detail' store.pk %}">{{ store.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'tabelog:review_list' store.pk %}">レビュー</a></li>
+            </ol>
+        </nav>
+
+        <!-- 店舗名と評価 -->
+        <div class="text-center mb-3">
+            <h2>{{ store.name }}</h2>
+            <div class="d-flex justify-content-center align-items-center">
+                <span class="text-warning h4">
+                    {% for i in "12345" %}
+                        {% if i <= average_score|floatformat:0 %}
+                            &#9733;
+                        {% else %}
+                            &#9734;
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <span class="h4 mb-0"> {{ average_score|floatformat:2 }} </span>
+                <span class="text-muted">({{ review_count }}件)</span>
+            </div>
+        </div>
+
+      
+        
+
+        <!-- ナビゲーションタブ -->
+        <ul class="nav nav-tabs mb-3 justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'tabelog:index' %}">トップ</a>
+            </li>
+            {% if user.is_authenticated and user.member_type == '2' %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'tabelog:reservation' store.pk %}">予約</a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'tabelog:review_list' store.pk %}">レビュー</a>
+            </li>
+        </ul>
+
+
+        <div class="reviews">
+            {% for review in reviews %}
+                <div class="review">
+                    <h6>{{ review.user.name }}さん</h6>
+                    <p>
+                        <span class="text-warning h6">
+                            {% for i in "12345" %}
+                                {% if i <= review.score|floatformat:0 %}
+                                    &#9733;
+                                {% else %}
+                                    &#9734;
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                    </p>
+                    <h5>{{ review.comment }}</h5>
+
+                    {% if user.member_type == '2' %}
+                    {% if review.user == request.user %}
+                        <a href="{% url 'tabelog:review_edit' review.pk %}" class="btn btn-primary btn-sm">編集</a>
+                        <form method="post" action="{% url 'tabelog:review_delete' review.pk %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('本当に削除しますか？')">削除</button>
+                        </form>
+                    {% endif %}
+                    {% endif %}
+                    <hr>
+                </div>
+    
+            {% endfor %}
+
+            
+        </div>
+
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+            {% for post in post_reserve %}
+                <p>{{ post.title }}</p>
+            {% endfor %}
+    
+            <!-- 前へ の部分 -->
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">前へ</a>
+            {% endif %}
+    
+            <!-- 1/3 の部分 -->
+           {{ page_obj.number }}/{{ page_obj.paginator.num_pages }}
+
+               <!-- 次へ の部分 -->
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">次へ</a>
+            {% endif %}
+            </ul>
+        </nav>
+
+        {% if user.member_type == '2' %}
+        <a href="{% url 'tabelog:review_create' store.pk %}" class="btn btn-danger">レビューを投稿する</a>
+        {% endif %}
+
+    </div>
+{% endblock %}

@@ -1,0 +1,41 @@
+<!-- subscription.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <h1>Subscription</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    <form id="payment-form" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="stripe_token" id="stripe_token">
+        <button id="submit-button">Subscribe</button>
+    </form>
+    <script>
+        var stripe = Stripe('{{ stripe_key }}');
+        var elements = stripe.elements();
+        var card = elements.create('card');
+        card.mount('#card-element');
+
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            stripe.createToken(card).then(function(result) {
+                if (result.error) {
+                    // Handle error
+                } else {
+                    var token = document.getElementById('stripe_token');
+                    token.value = result.token.id;
+                    form.submit();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

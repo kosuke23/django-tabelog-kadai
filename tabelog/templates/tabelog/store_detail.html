@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="container mt-4">
+        <!-- パンくずリスト -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:index' %}">ホーム</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:storelist' %}">店舗一覧</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ store.name }}</li>
+            </ol>
+        </nav>
+        
+        <!-- 店舗名と評価 -->
+        <div class="text-center mb-3">
+            <h2>{{ store.name }}</h2>
+            <div class="d-flex justify-content-center align-items-center">
+                <span class="text-warning h4">
+                    {% for i in "12345" %}
+                        {% if i <= average_score|floatformat:0 %}
+                            &#9733;
+                        {% else %}
+                            &#9734;
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <span class="h4 mb-0"> {{ average_score|floatformat:2 }} </span>
+                <span class="text-muted">({{ review_count }}件)</span>
+            </div>
+        </div>
+
+        <!-- ナビゲーションタブ -->
+        <ul class="nav nav-tabs mb-3 justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'tabelog:index' %}">トップ</a>
+            </li>
+            {% if user.is_authenticated and user.member_type == '2' %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'tabelog:reservation' store.pk %}">予約</a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'tabelog:review_list' store.pk %}">レビュー</a>
+            </li>
+        </ul>
+
+        <!-- メイン画像 -->
+        <div class="text-center mb-4">
+            {% if store.image %}
+                <img src="{{ store.image.url }}" class="store-image mb-3" alt="{{ store.name }}">
+            {% endif %}
+        </div>
+
+        <!-- 店舗情報 -->
+        <div class="table-responsive">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th scope="row">店舗名</th>
+                        <td>{{ store.name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">説明</th>
+                        <td>{{ store.description }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">価格帯</th>
+                        <td>{{ store.lowest_price }}円〜{{ store.highest_price }}円</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">郵便番号</th>
+                        <td>{{ store.postal_code }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">住所</th>
+                        <td>{{ store.address }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">電話番号</th>
+                        <td>{{ store.phone_number }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">営業時間</th>
+                        <td>{{ store.opening_time }}〜{{ store.closing_time }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">定休日</th>
+                        <td>{{ store.regular_holiday }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">座席数</th>
+                        <td>{{ store.seating_capacity }}席</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">カテゴリ</th>
+                        <td>{{ store.category }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- お気に入りボタン -->
+        <div class="text-center mb-4">
+            {% if user.is_authenticated %}
+                {% if user.member_type == '2' %}
+                {% if store in user.favorite_set.all %}
+                    <form action="{% url 'tabelog:remove_favorite' store.pk %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">お気に入りから削除</button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'tabelog:add_favorite' store.pk %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">お気に入りに追加</button>
+                    </form>
+                {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

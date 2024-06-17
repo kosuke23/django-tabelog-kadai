@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+
+        <!-- 新規会員登録フォーム -->
+        <div class="text-center mb-4">
+            <h2>新規会員登録完了</h2>
+        </div>
+
+              <!-- カードボディー -->
+      <div class="card-body">
+        <p>ユーザー登録が完了しました。ログインページへお進みください。</p>
+        <p class="text-danger">"ユーザー名"と"パスワード"は大切に管理してください。</p>
+        <hr>
+        <a href="{% url 'tabelog:login' %}">ログイン</a>
+      </div>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container mt-4">
+        <!-- パンくずリスト -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:index' %}">ホーム</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:mypage' user.pk %}">マイページ</a></li>
+            </ol>
+        </nav>
+
+        <!-- マイページメニュー -->
+        <div class="text-center mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    マイページ
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="{% url 'tabelog:member' user.pk %}">会員情報</a></li>
+
+                        {% if form_name == "password_change" %}
+                        {% else %}
+                          <li><a class="list-group-item" href="{% url 'tabelog:password_change' %}" class="logout">パスワードの変更</a></li>
+                        {% endif %}
+
+                        {% if user.member_type == '1' %}
+                            <li class="list-group-item"><a href="{% url 'tabelog:subscribe' %}">有料会員登録</a></li>
+                        {% elif user.member_type == '2' %}
+                            <li class="list-group-item"><a href="{% url 'tabelog:unsubscribe' %}">有料会員解約</a></li>
+                            <li class="list-group-item"><a href="{% url 'tabelog:reservation_list' user.pk %}">予約一覧</a></li>
+                            <li class="list-group-item"><a href="{% url 'tabelog:favorite_list' user.pk %}">お気に入り一覧</a></li>
+                        {% endif %}
+                        
+                        <li class="list-group-item"><a href="{% url 'tabelog:delete_account' %}">退会</a></li>
+                        <li class="list-group-item"><a href="{% url 'tabelog:logout' %}">ログアウト</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

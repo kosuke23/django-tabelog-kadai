@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="d-flex flex-column min-vh-100">
+    <div class="container mt-4 mb-auto">
+
+        <!-- ログアウト情報 -->
+        <div class="text-center mb-4">
+            <h2>ログアウト</h2>
+        
+        </div>
+
+    <!-- カードボディー -->
+      <div class='card-body'>
+        <p>ログアウトしました。</p>
+        <p>ご利用ありがとうございました。</p>
+        <hr class='mt-2 mb-2'>
+        <p><a href="{% url 'tabelog:login' %}">もう一度ログインする</a></p>
+      </div>
+       
+    </div>
+    </div>
+{% endblock %}

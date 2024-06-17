@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container mt-4">
+        <!-- パンくずリスト -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:index' %}">ホーム</a></li>
+                <li class="breadcrumb-item active" aria-current="page">退会</li>
+            </ol>
+        </nav>
+
+        <!-- 退会確認 -->
+        <div class="text-center mb-4">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    退会手続き
+                </div>
+                <div class="card-body">
+                    <p>退会すると、すべてのデータが削除されます。本当に退会しますか？</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">退会する</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

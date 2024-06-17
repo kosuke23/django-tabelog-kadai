@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>検索結果</h2>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <!-- サイドバー -->
+                <div class="card">
+                    <div class="card-header">
+                        カテゴリから探す
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" action="{% url 'tabelog:storelist' %}">
+                            <div class="form-group">
+                                <select class="form-control" name="category">
+                                    <option value="">選択してください</option>
+                                    {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-danger">検索</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header">
+                        予算から探す
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" action="{% url 'tabelog:storelist' %}">
+                            <div class="form-group">
+                                <select class="form-control" name="budget">
+                                    <option value="">選択してください</option>
+                                    <option value="1" {% if request.GET.budget == '1' %}selected{% endif %}>0〜999円</option>
+                                    <option value="2" {% if request.GET.budget == '2' %}selected{% endif %}>1,000〜2,999円</option>
+                                    <option value="3" {% if request.GET.budget == '3' %}selected{% endif %}>3,000〜4,999円</option>
+                                    <option value="4" {% if request.GET.budget == '4' %}selected{% endif %}>5,000〜9,999円</option>
+                                    <option value="5" {% if request.GET.budget == '5' %}selected{% endif %}>10,000円以上</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-danger">検索</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {% if stores %}
+            <div class="col-md-9">
+                <h2>{{ stores.count }}件の店舗が見つかりました</h2>
+                <div class="mb-3">
+                    <form method="GET" action="{% url 'tabelog:storelist' %}">
+                        <input type="hidden" name="category" value="{{ request.GET.category }}">
+                        <input type="hidden" name="budget" value="{{ request.GET.budget }}">
+                        <input type="hidden" name="keyword" value="{{ request.GET.keyword }}">
+                        <div class="form-group">
+                            <label for="sort_by">並べ替え:</label>
+                            <select class="form-control" id="sort_by" name="sort_by" onchange="this.form.submit()">
+                                <option value="">選択してください</option>
+                                <option value="newest" {% if request.GET.sort_by == 'newest' %}selected{% endif %}>掲載日が新しい順</option>
+                                <option value="highest_rating" {% if request.GET.sort_by == 'highest_rating' %}selected{% endif %}>評価が高い順</option>
+                                <option value="lowest_price" {% if request.GET.sort_by == 'lowest_price' %}selected{% endif %}>価格が安い順</option>
+                                <option value="highest_price" {% if request.GET.sort_by == 'highest_price' %}selected{% endif %}>価格が高い順</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+
+                <ul class="list-group">
+                    {% for store in stores %}
+                    <li class="list-group-item">
+                        <div class="media">
+                            <a href="{% url 'tabelog:store_detail' store.pk %}">
+                            {% if store.image %}
+                                <img src="{{ store.image.url }}" class="mr-3" alt="{{ store.name }}" style="width: 100px; height: 100px;">
+                            {% else %}
+                                <img src="{% static 'images/default_store.png' %}" class="mr-3" alt="{{ store.name }}" style="width: 100px; height: 100px;">
+                            {% endif %}
+                            </a>
+                            <div class="media-body">
+                                <h5 class="mt-0"><a href="{% url 'tabelog:store_detail' store.pk %}">{{ store.name }}</a></h5>
+                                <p>{{ store.description }}</p>
+                                <p>{{ store.lowest_price }}円〜{{ store.highest_price }}円</p>
+                                <p>{{ store.address }}</p>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <!-- ページネーション -->
+                <div class="d-flex justify-content-center mt-4">
+                {% for post in post_list %}
+                    <p>{{ post.title }}</p>
+                {% endfor %}
+        
+                <!-- 前へ の部分 -->
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}">前へ</a>
+                {% endif %}
+        
+                <!-- 1/3 の部分 -->
+               {{ page_obj.number }}/{{ page_obj.paginator.num_pages }}
+
+                   <!-- 次へ の部分 -->
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">次へ</a>
+                {% endif %}
+
+
+            </div>
+            {% else %}
+            <p>該当する店舗は見つかりませんでした。</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <main class="container mt-4">
+        <section class="mb-4">
+            <h2>キーワードから探す</h2>
+
+            <form method="GET" action="{% url 'tabelog:storelist' %}">
+                <div class="input-group mb-3" style="max-width: 300px;">
+                    <input type="text" class="form-control" name="keyword" placeholder="店舗名・カテゴリ" aria-label="検索">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-danger" type="submit">検索</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+        
+        <section class="mb-4">
+            <h2>評価が高いお店</h2>
+            <div class="card-deck">
+                {% for store in high_rating_stores %}
+                    <div class="card">
+                        <a href="{% url 'tabelog:store_detail' store.pk %}">
+                            <img src="{{ store.image.url }}" class="card-img-top" alt="{{ store.name }}">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ store.name }} {{ store.average_score|floatformat:2 }}</h5>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="mb-4">
+            <h2>カテゴリから探す</h2>
+            <div class="category-buttons">
+                {% for category in categories %}
+                    <a href="{% url 'tabelog:storelist' %}?category={{ category.pk }}">
+                        <button type="button" class="btn btn-outline-secondary btn-sm category-button">{{ category.name }}</button>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="mb-4">
+            <h2>新規掲載店</h2>
+            <div class="card-deck">
+                {% for store in new_stores %}
+                    <div class="card">
+                        <a href="{% url 'tabelog:store_detail' store.pk %}">
+                            <img src="{{ store.image.url }}" class="card-img-top" alt="{{ store.name }}">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ store.name }}</h5>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+{% endblock %}

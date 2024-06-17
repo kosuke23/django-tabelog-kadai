@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+<!-- パンくずリスト -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'tabelog:index' %}">ホーム</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'tabelog:mypage' pk=request.user.pk %}">マイページ</a></li>
+        <li class="breadcrumb-item active" aria-current="page">有料プラン登録</li>
+    </ol>
+</nav>
+
+<!-- 有料プラン登録 -->
+<div class="text-center">
+    <h2>有料プラン登録</h2>
+    <h5>テストカード番号:4242424242424242</h5>
+    <div class="card mx-auto" style="max-width: 500px;">
+        <div class="card-body">
+            <h4 class="card-title">有料プランの内容</h4>
+            <ul class="list-unstyled">
+                <li>・いつでも予約可能</li>
+                <li>・店舗をお好きなだけお気に入りに追加可能</li>
+                <li>・レビューを投稿可能</li>
+                <li>・月額たったの300円</li>
+            </ul>
+            {% if error %}
+            <p style="color: red;">{{ error }}</p>
+            {% endif %}
+            <form id="payment-form" method="post">
+                {% csrf_token %}
+                <div id="card-element"></div>
+                <input type="hidden" name="stripe_token" id="stripe_token">
+                <br>
+                <button class="btn btn-danger btn-lg" id="submit-button">登録</button>
+            </form>
+            <script src="https://js.stripe.com/v3/"></script>
+            <script>
+                var stripe = Stripe('{{ stripe_key }}');
+                var elements = stripe.elements();
+                var card = elements.create('card');
+                card.mount('#card-element');
+    
+                var form = document.getElementById('payment-form');
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    stripe.createToken(card).then(function(result) {
+                        if (result.error) {
+                            // Handle error
+                            var errorElement = document.createElement('p');
+                            errorElement.style.color = 'red';
+                            errorElement.textContent = result.error.message;
+                            form.appendChild(errorElement);
+                        } else {
+                            var token = document.getElementById('stripe_token');
+                            token.value = result.token.id;
+                            form.submit();
+                        }
+                    });
+                });
+            </script>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

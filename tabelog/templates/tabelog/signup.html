@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+
+        <!-- 新規会員登録フォーム -->
+        <div class="text-center mb-4">
+            <h2>新規会員登録</h2>
+        </div>
+
+ 
+          <!-- カードボディー -->
+          <div class="card-body">
+            <form action="" method="POST">
+              {% csrf_token %}
+              {{ form.non_field_errors }}
+              {% for field in form %}
+                <div class="form-group">
+                  <label for="{{ field.id_for_label }}">{{ field.label_tag }}<span class="text-danger">必須</span></label>
+                  {{ field }}
+                  {{ field.errors }}
+                </div>
+              {% endfor %}
+              
+
+              <!-- ボタン -->
+              <div class="text-center">
+                <button type="submit" class="btn btn-danger btn-lg">新規会員登録</button>
+           　 </div>
+            </form>
+          </div>
+
+            <div class="text-center mt-3">
+                <a href="{% url 'tabelog:login' %}" class="text-danger">すでに登録済みの方はこちら</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

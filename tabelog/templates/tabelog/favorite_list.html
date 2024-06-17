@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:index' %}">ホーム</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:mypage' user.pk %}">マイページ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">お気に入り一覧</li>
+            </ol>
+        </nav>
+
+        <h2>お気に入り一覧</h2>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>店舗名</th>
+                    <th>郵便番号</th>
+                    <th>住所</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for favorite in favorites %}
+                    <tr>
+                        <td>{{ favorite.store.name }}</td>
+                        <td>{{ favorite.store.postal_code }}</td>
+                        <td>{{ favorite.store.address }}</td>
+                        <td>
+                            <form method="post" action="{% url 'tabelog:remove_favorite' favorite.store.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('解除してよいですか？')">解除</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- ページネーション -->
+        <ul class="pagination justify-content-center">
+            {% for post in post_reserve %}
+                <p>{{ post.title }}</p>
+            {% endfor %}
+    
+            <!-- 前へ の部分 -->
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">前へ</a>
+            {% endif %}
+    
+            <!-- 1/3 の部分 -->
+           {{ page_obj.number }}/{{ page_obj.paginator.num_pages }}
+
+               <!-- 次へ の部分 -->
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">次へ</a>
+            {% endif %}
+        </ul>
+    </div>
+{% endblock %}

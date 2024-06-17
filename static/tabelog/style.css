@@ -1,0 +1,4 @@
+.store-image {
+    max-width: 100px; /* 画像の最大幅を設定 */
+    height: auto;    /* 高さを自動調整 */
+}

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container mt-4">
+        <!-- パンくずリスト -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:index' %}">ホーム</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:storelist' %}">店舗一覧</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:store_detail' store.pk %}">{{ store.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">予約</li>
+            </ol>
+        </nav>
+
+        <!-- 店舗名と評価 -->
+        <div class="text-center mb-3">
+            <h2>{{ store.name }}</h2>
+            <div class="d-flex justify-content-center align-items-center">
+                <span class="text-warning h4">
+                    {% for i in "12345" %}
+                        {% if i <= average_score|floatformat:0 %}
+                            &#9733;
+                        {% else %}
+                            &#9734;
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <span class="h4 mb-0"> {{ average_score|floatformat:2 }} </span>
+                <span class="text-muted">({{ review_count }}件)</span>
+            </div>
+        </div>
+
+        <!-- ナビゲーションタブ -->
+        <ul class="nav nav-tabs mb-3 justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'tabelog:index' %}">トップ</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'tabelog:reservation' store.pk %}">予約</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'tabelog:review_list' store.pk %}">レビュー</a>
+            </li>
+        </ul>
+
+        <!-- 予約フォーム -->
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="reserved_date">予約日</label>
+                <input type="date" class="form-control" id="reserved_date" name="reserved_date" required>
+            </div>
+            <div class="form-group">
+                <label for="reserved_time">時間</label>
+                <select class="form-control" id="reserved_time" name="reserved_time" required>
+                    <option value="" disabled selected>選択してください</option>
+                    <option value="11:00">11:00</option>
+                    <option value="11:30">11:30</option>
+                    <option value="12:00">12:00</option>
+                    <option value="12:30">12:30</option>
+                    <option value="13:00">13:00</option>
+                    <option value="13:30">13:30</option>
+                    <option value="14:00">14:00</option>
+                    <option value="14:30">14:30</option>
+                    <option value="15:00">15:00</option>
+                    <option value="15:30">15:30</option>
+                    <option value="16:00">16:00</option>
+                    <option value="16:30">16:30</option>
+                    <option value="17:00">17:00</option>
+                    <option value="17:30">17:30</option>
+                    <option value="18:00">18:00</option>
+                    <option value="18:30">18:30</option>
+                    <option value="19:00">19:00</option>
+                    <option value="19:30">19:30</option>
+                    <option value="20:00">20:00</option>
+                    <option value="20:30">20:30</option>
+                    <option value="21:00">21:00</option>
+                    <option value="21:30">21:30</option>
+                    <option value="22:00">22:00</option>
+                    <option value="22:30">22:30</option>
+                    <option value="23:00">23:00</option>
+                    <option value="23:30">23:30</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="number_of_people">人数</label>
+                <select class="form-control" id="number_of_people" name="number_of_people" required>
+                    <option value="" disabled selected>選択してください</option>
+                    <option value="1">1人</option>
+                    <option value="2">2人</option>
+                    <option value="3">3人</option>
+                    <option value="4">4人</option>
+                    <option value="5">5人</option>
+                    <option value="6">6人</option>
+                    <option value="7">7人</option>
+                    <option value="8">8人</option>
+                    <option value="9">9人</option>
+                    <option value="10">10人</option>
+                    <option value="11">11人</option>
+                    <option value="12">12人</option>
+                    <option value="13">13人</option>
+                    <option value="14">14人</option>
+                    <option value="15">15人</option>
+                    <option value="16">16人</option>
+                    <option value="17">17人</option>
+                    <option value="18">18人</option>
+                    <option value="19">19人</option>
+                    <option value="20">20人</option>
+                    <option value="21">21人</option>
+                    <option value="22">22人</option>
+                    <option value="23">23人</option>
+                    <option value="24">24人</option>
+                    <option value="25">25人以上</option>
+                    <option value="50">50人以上</option>
+                </select>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-danger btn-lg">予約する</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

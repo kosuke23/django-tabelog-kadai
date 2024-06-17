@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="d-flex flex-column min-vh-100">
+    <div class="container mt-4 mb-auto">
+
+
+        <!-- パンくずリスト -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'tabelog:index' %}">ホーム</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'tabelog:mypage' user.pk %}">マイページ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">会員情報</li>
+            </ol>
+        </nav>
+
+        <!-- 会員情報 -->
+        <div class="text-center mb-4">
+            <h2>会員情報</h2>
+            
+            <a href="{% url 'tabelog:update_user' %}">編集</a>
+          
+        </div>
+
+        <!-- 会員情報テーブル -->
+        <div class="table-responsive">
+            <table class="table table-borderless">
+                <tbody>
+                    <tr>
+                        <th scope="row">氏名</th>
+                        <td>{{ user.name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">フリガナ</th>
+                        <td>{{ user.furigana }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">メールアドレス</th>
+                        <td>{{ user.mail_address }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">パスワード</th>
+                        <td>***************</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">郵便番号</th>
+                        <td>{{ user.postal_code }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">住所</th>
+                        <td>{{ user.address }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">電話番号</th>
+                        <td>{{ user.phone_number }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">会員種別</th>
+                        <td>{{ user.member_type }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">登録日</th>
+                        <td>{{ user.created_at }}</td>
+                    </tr>                   
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="d-flex flex-column min-vh-100">
+    <div class="container mt-4 mb-auto">
+
+        <!-- ログイン情報 -->
+        <div class="text-center mb-4">
+            <h2>ログイン</h2>
+            <p class="text-left">
+                動作確認用アカウント<br>
+                メールアドレス：user@example.com<br>
+                パスワード：samurai12<br>
+               
+            </p>
+        </div>
+
+        <!-- ログインフォーム -->
+        <form method="POST">
+            {{ form.non_field_errors }}
+            {% csrf_token %}    
+            {% for field in form %}
+            <div class="form-group">
+            {{ field.label }}
+            <br>
+            {{ field }}
+            {{ field.errors }}
+            <br>
+            </div>
+            {% endfor %}
+            <div class="form-group form-check">
+                <input type="checkbox" name="remember" class="form-check-input" id="remember">
+                <label class="form-check-label" for="id_remember">次回から自動的にログインする</label>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-danger btn-lg">ログイン</button>
+            </div>
+           
+            <!--
+            <div class="text-center mt-3">
+                <a href="{%url 'tabelog:password_reset' %}" class="text-danger">パスワードをお忘れの方はこちら</a>
+            </div>
+            -->
+
+            <div class="text-center mt-2">
+                <a href="{% url 'tabelog:signup' %}" class="text-danger">新規会員登録はこちら</a>
+            </div>        
+        </form>
+    </div>
+{% endblock %}
