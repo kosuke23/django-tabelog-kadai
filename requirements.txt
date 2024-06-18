@@ -1,2 +1,9 @@
-Django
 mysqlclient
+django==5.0.4
+dj-database-url
+dj-static
+python-decouple
+django-environ
+gunicorn
+psycopg2-binary
+whitenoise

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 
 {% block content %}
     <main class="container mt-4">
@@ -21,9 +21,13 @@
             <div class="card-deck">
                 {% for store in high_rating_stores %}
                     <div class="card">
+                        {% if store.image and store.image.url %}
                         <a href="{% url 'tabelog:store_detail' store.pk %}">
                             <img src="{{ store.image.url }}" class="card-img-top" alt="{{ store.name }}">
                         </a>
+                        {% else %}
+                        <img src="{% static 'images/default.jpg' %}" alt="Default Image" class="card-img-top">
+                        {% endif %}
                         <div class="card-body">
                             <h5 class="card-title">{{ store.name }} {{ store.average_score|floatformat:2 }}</h5>
                         </div>
@@ -48,9 +52,13 @@
             <div class="card-deck">
                 {% for store in new_stores %}
                     <div class="card">
+                        {% if store.image and store.image.url %}
                         <a href="{% url 'tabelog:store_detail' store.pk %}">
                             <img src="{{ store.image.url }}" class="card-img-top" alt="{{ store.name }}">
                         </a>
+                        {% else %}
+                        <img src="{% static 'images/default.jpg' %}" alt="Default Image" class="card-img-top">
+                        {% endif %}
                         <div class="card-body">
                             <h5 class="card-title">{{ store.name }}</h5>
                         </div>
