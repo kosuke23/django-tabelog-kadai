@@ -32,7 +32,7 @@ SECRET_KEY = "django-insecure-t@_*2v=v5qg_*7gvm-f)zd@c2318s3o_&(*12dlc9r+c)r9x4r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '[::1]']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '[::1]', 'django-tabelog.onrender.com']
 
 
 # Application definition
