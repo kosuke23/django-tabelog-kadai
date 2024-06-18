@@ -25,7 +25,13 @@
                   {% if not user.is_authenticated %}
                   <li class="nav-item"><a class="nav-link text-white" href="{% url 'tabelog:login' %}">ログイン</a></li>
                   {% else %}
-                  <li class="nav-item"><a class="nav-link text-white" href="{% url 'tabelog:logout' %}">ログアウト</a></li>
+                  <li class="nav-item">
+                    <form id="logout-form" action="{% url 'tabelog:logout' %}" method="post" style="display: none;">
+                        {% csrf_token %}
+                        <button type="submit">ログアウト</button>
+                    </form>
+                    <a class="nav-link text-white" href="#" onclick="document.getElementById('logout-form').submit(); return false;">ログアウト</a>
+                </li>
 
                 {% endif %}
               </ul>

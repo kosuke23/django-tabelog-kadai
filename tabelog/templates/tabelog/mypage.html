@@ -33,7 +33,13 @@
                         {% endif %}
                         
                         <li class="list-group-item"><a href="{% url 'tabelog:delete_account' %}">退会</a></li>
-                        <li class="list-group-item"><a href="{% url 'tabelog:logout' %}">ログアウト</a></li>
+                        <li class="list-group-item">
+                            <form id="logout-form" action="{% url 'tabelog:logout' %}" method="post" style="display: none;">
+                                {% csrf_token %}
+                                <button type="submit">ログアウト</button>
+                            </form>
+                            <a class="nav-link" href="{% url 'tabelog:logout' %}" onclick="document.getElementById('logout-form').submit(); return false;">ログアウト</a>
+                        </li>
                     </ul>
                 </div>
             </div>
