@@ -1,5 +1,5 @@
 databases:
-  - name: django_render_db
+  - name: django_tabelog_db
     region: singapore
     plan: free
     databaseName: django_tabelog_db
