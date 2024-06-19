@@ -5,6 +5,7 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, User
+from cloudinary.models import CloudinaryField
 
 
 class UserManager(BaseUserManager):
@@ -92,7 +93,9 @@ class Store(models.Model):
     store_id = models.AutoField(primary_key=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='stores')
     name = models.CharField("店舗名", max_length=264)
+ 
     image = models.ImageField("画像", upload_to='store_images/', blank=True, null=True)
+   # image = CloudinaryField("画像", blank=True, null=True)
     description = models.TextField("説明")
     lowest_price = models.IntegerField("価格帯(下限)")
     highest_price = models.IntegerField("価格帯(上限)")
