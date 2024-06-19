@@ -44,6 +44,17 @@
         </ul>
 
         <!-- 予約フォーム -->
+
+        {% if messages %}
+        <div>
+            {% for message in messages %}
+            <div class="{% if message.tags %}alert alert-{{ message.tags }}{% else %}alert alert-info{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <form method="post">
             {% csrf_token %}
             <div class="form-group">

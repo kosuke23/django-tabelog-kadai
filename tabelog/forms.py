@@ -4,7 +4,8 @@ from django.contrib.auth import get_user_model
 from .models import User, Reservation, Review
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-
+from django.utils import timezone
+from datetime import datetime, time
 
 
 # ユーザーモデル取得
@@ -51,20 +52,43 @@ class ReservationForm(forms.ModelForm):
             'number_of_people': forms.NumberInput(attrs={'min': '1'}),
         }
 
-        def clean(self):
-            cleaned_data = super().clean()
-            reserved_date = cleaned_data.get("reserved_date")
-            reserved_time = cleaned_data.get("reserved_time")
-            user = self.instance.user
+    def __init__(self, *args, **kwargs):
+        self.store = kwargs.pop('store', None)
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
 
+    def clean(self):
+        cleaned_data = super().clean()
+        reserved_date = cleaned_data.get("reserved_date")
+        reserved_time = cleaned_data.get("reserved_time")
+
+        if reserved_date and reserved_time:
+            reserved_datetime = datetime.combine(reserved_date, reserved_time)
+            reserved_datetime = timezone.make_aware(reserved_datetime, timezone.get_current_timezone())
+
+            # 予約日時が現在より前の場合はエラー
+            if reserved_datetime < timezone.now():
+                raise ValidationError(_("予約日は本日以降の日付にしてください。"))
+                
+
+            # 営業時間のチェック
+            if self.store:
+                opening_time = self.store.opening_time
+                closing_time = self.store.closing_time
+                if not (opening_time <= reserved_time <= closing_time):
+                    raise ValidationError(_("予約時間が営業時間外です。"))
+                
+
+            # 同じユーザーが同じ日時に予約しているかチェック
             if Reservation.objects.filter(
-                user=user,
+                user=self.user,
                 reserved_date=reserved_date,
                 reserved_time=reserved_time
-            ).exclude(pk=self.instance.pk).exists():
+            ).exists():
                 raise ValidationError(_("この時間帯には既に予約があります。"))
 
-            return cleaned_data
+        return cleaned_data
+
 
 '''レビューフォーム'''
 class ReviewForm(forms.ModelForm):

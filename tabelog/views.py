@@ -25,6 +25,8 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from django.utils import timezone
+from datetime import datetime, time
 
 import stripe
 
@@ -286,24 +288,57 @@ class ReservationView(PremiumUserRequiredMixin, FormView):
     template_name = 'tabelog/reservation.html'
     form_class = ReservationForm
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['store'] = get_object_or_404(Store, pk=self.kwargs['pk'])
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         store_id = self.kwargs['pk']
-        reviews = Review.objects.filter(store_id=store_id)
+        store = get_object_or_404(Store, pk=store_id)
+        reviews = Review.objects.filter(store=store)
         context['average_score'] = reviews.aggregate(Avg('score'))['score__avg'] or 0
         context['review_count'] = reviews.count()
-        context['store'] = get_object_or_404(Store, pk=self.kwargs['pk'])
+        context['store'] = store
         return context
 
     def form_valid(self, form):
         reservation = form.save(commit=False)
-        reservation.store = get_object_or_404(Store, pk=self.kwargs['pk'])
+        reservation.store = form.store
         reservation.user = self.request.user
+
+        reserved_datetime = timezone.make_aware(datetime.combine(reservation.reserved_date, reservation.reserved_time), timezone.get_current_timezone())
+
+        # 予約日時が現在より前の場合はエラー
+        if reserved_datetime < timezone.now():
+            form.add_error(None, ValidationError(_("予約日は本日以降の日付にしてください。")))
+            return self.form_invalid(form)
+
+        # 同じユーザーの同じ日時の予約が存在するかチェック
+        if Reservation.objects.filter(
+            user=reservation.user,
+            reserved_date=reservation.reserved_date,
+            reserved_time=reservation.reserved_time
+        ).exclude(pk=reservation.pk).exists():
+            form.add_error(None, ValidationError(_("この時間帯には既に予約があります。")))
+            return self.form_invalid(form)
+        
+        # 同じユーザーの同じ日時の予約が存在するかチェック
+        if Reservation.objects.filter(
+            user=reservation.user,
+            reserved_date=reservation.reserved_date,
+            reserved_time=reservation.reserved_time
+        ).exclude(pk=reservation.pk).exists():
+            form.add_error(None, ValidationError(_("この時間帯には既に予約があります。")))
+            return self.form_invalid(form)
+
         reservation.save()
         return redirect('tabelog:store_detail', pk=self.kwargs['pk'])
 
-    def get_success_url(self):
-        return reverse('tabelog:store_detail', kwargs={'pk': self.kwargs['pk']})
+    def form_invalid(self, form):
+        messages.error(self.request, form.errors.as_text())
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 '''予約変更'''
@@ -311,6 +346,11 @@ class ReservationUpdateView(PremiumUserRequiredMixin, generic.UpdateView):
     model = Reservation
     form_class = ReservationForm
     template_name = 'tabelog/reservation_update.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['store'] = self.get_object().store
+        return kwargs
 
     def form_valid(self, form):
         try:
@@ -323,6 +363,7 @@ class ReservationUpdateView(PremiumUserRequiredMixin, generic.UpdateView):
             return redirect('tabelog:reservation_list', pk=self.request.user.pk)
         except ValidationError as e:
             form.add_error(None, e)
+            messages.error(self.request, e.message)
             return self.form_invalid(form)
 
     def get_initial(self):
@@ -353,11 +394,7 @@ class ReservationUpdateView(PremiumUserRequiredMixin, generic.UpdateView):
         ]
         context['people'] = [str(i) for i in range(1, 26)] + ["25人以上", "50人以上"]
         return context
-
-
-
-
-
+    
 '''予約一覧ページ'''
 class ReservationListView(PremiumUserRequiredMixin, generic.ListView):
     model = Reservation
