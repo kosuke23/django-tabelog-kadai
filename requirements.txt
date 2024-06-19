@@ -9,3 +9,6 @@ psycopg2-binary
 whitenoise
 stripe
 Pillow
+django-cloudinary-storage
+cloudinary
+django-environ~=0.4.5
